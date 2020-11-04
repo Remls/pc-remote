@@ -3,7 +3,9 @@ from pynput.keyboard import Key, Controller
 from pynput.mouse import Controller as MouseController
 from secrets import USERS
 import config
-import random
+import random, logging
+
+logger = logging.getLogger(__name__)
 
 
 def press_key(key):
@@ -71,6 +73,7 @@ def answer_remote(bot, update):
         if (input_action):
             # Perform action by calling the function
             input_action["action"]()
+            logger.info("{} pressed".format(input_text))
             if input_text == REMOTE_ACTIONS["sil"]["label"]:
                 update.message.reply_text(
                     text = "Silent mode {}.".format("activated" if config.SILENT_MODE else "deactivated"),
