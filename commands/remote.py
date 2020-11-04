@@ -2,6 +2,7 @@ from telegram import ReplyKeyboardMarkup
 from pynput.keyboard import Key, Controller
 from pynput.mouse import Controller as MouseController
 from secrets import USERS
+import config
 import random
 
 
@@ -17,6 +18,9 @@ def mouse_twitch():
     x = random.choice([1, -1])
     mouse.move(20 * x, 20 * x)
 
+def toggle_silent_mode():
+    config.SILENT_MODE = not config.SILENT_MODE
+
 REMOTE_ACTIONS = {
     "f": { "label": "💻 Fullscreen", "action": press_key('f'), "reply": "Fullscreen" },
     "f_off": { "label": "💻 Fullscreen off", "action": press_key(Key.esc), "reply": "Fullscreen off" },
@@ -27,7 +31,8 @@ REMOTE_ACTIONS = {
     "m": { "label": "🔈🚫", "action": press_key('m'), "reply": "Toggling mute ..." },
     "vu": { "label": "🔈+", "action": press_key(Key.up), "reply": "Increasing volume ..." },
     "np": { "label": "🖱 Now playing", "action": mouse_twitch, "reply": "🖱" },
-    "s": { "label": "⏭ Skip intro", "action": press_key('s'), "reply": "Skipping intro ..." }
+    "s": { "label": "⏭ Skip intro", "action": press_key('s'), "reply": "Skipping intro ..." },
+    "sil": { "label": "Silent mode", "action": toggle_silent_mode, "reply": "" }
 }
 
 def get_label(action_key):
@@ -47,7 +52,8 @@ def send_remote(bot, update):
             ["f", "f_off"],
             ["rw", "p", "ff"],
             ["vd", "m", "vu"],
-            ["np", "s"]
+            ["np", "s"],
+            ["sil"]
         ]
         keyboard = [[get_label(button) for button in row] for row in keyboard]
         update.message.reply_text(
@@ -65,7 +71,14 @@ def answer_remote(bot, update):
         if (input_action):
             # Perform action by calling the function
             input_action["action"]()
-            update.message.reply_text(
-                text = input_action["reply"],
-                quote = False
-            )
+            if input_text == REMOTE_ACTIONS["sil"]["label"]:
+                update.message.reply_text(
+                    text = "Silent mode {}.".format("activated" if config.SILENT_MODE else "deactivated"),
+                    quote = False
+                )
+            elif not config.SILENT_MODE:
+                # Send reply only if not in silent mode
+                update.message.reply_text(
+                    text = input_action["reply"],
+                    quote = False
+                )
