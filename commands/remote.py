@@ -3,7 +3,7 @@ from pynput.keyboard import Key, Controller
 from pynput.mouse import Controller as MouseController
 from secrets import USERS
 import config
-import random, logging
+import random, logging, time
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +17,9 @@ def press_key(key):
 
 def mouse_twitch():
     mouse = MouseController()
-    x = random.choice([1, -1])
-    mouse.move(20 * x, 20 * x)
+    mouse.position = (100, 100)
+    time.sleep(0.5)
+    mouse.move(100, 100)
 
 def toggle_silent_mode():
     config.SILENT_MODE = not config.SILENT_MODE
