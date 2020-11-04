@@ -1,5 +1,9 @@
 # PC Remote
 
+Pass keyboard shortcuts to your PC via a Telegram bot.
+
+This is intended for use with Netflix on a browser being the active window. It also works just fine for VLC (other than the Skip intro button).
+
 ## How to run
 
 1. You must have Python 3 installed. This bot is written in Python 3.7.
