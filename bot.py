@@ -38,5 +38,5 @@ dispatcher.add_handler(handler)
 logger.info("Registered keyboard remote handler")
 
 
-updater.start_polling()
+updater.start_polling(clean = True)
 updater.idle()
