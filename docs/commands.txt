@@ -1,0 +1,2 @@
+start - Send remote
+ping - Checks if bot is listening

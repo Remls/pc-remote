@@ -1,0 +1,4 @@
+**/*.pyc
+docs/start_time.txt
+secrets.py
+run.bat

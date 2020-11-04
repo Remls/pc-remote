@@ -1,0 +1,5 @@
+# Used to interact with the Telegram Bot API
+python-telegram-bot==11.1.0
+
+# Used to simulate keypresses and mouse input
+pynput

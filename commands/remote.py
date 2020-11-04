@@ -1,0 +1,71 @@
+from telegram import ReplyKeyboardMarkup
+from pynput.keyboard import Key, Controller
+from pynput.mouse import Controller as MouseController
+from secrets import USERS
+import random
+
+
+def press_key(key):
+    def press():
+        keyboard = Controller()
+        keyboard.press(key)
+        keyboard.release(key)
+    return press
+
+def mouse_twitch():
+    mouse = MouseController()
+    x = random.choice([1, -1])
+    mouse.move(20 * x, 20 * x)
+
+REMOTE_ACTIONS = {
+    "f": { "label": "💻 Fullscreen", "action": press_key('f'), "reply": "Fullscreen" },
+    "f_off": { "label": "💻 Fullscreen off", "action": press_key(Key.esc), "reply": "Fullscreen off" },
+    "rw": { "label": "⏪", "action": press_key(Key.left), "reply": "Rewinding by 10s ..." },
+    "p": { "label": "⏯", "action": press_key(Key.space), "reply": "Playing/pausing ..." },
+    "ff": { "label": "⏩", "action": press_key(Key.right), "reply": "Fast-forwarding by 10s .." },
+    "vd": { "label": "🔈-", "action": press_key(Key.down), "reply": "Decreasing volume ..." },
+    "m": { "label": "🔈🚫", "action": press_key('m'), "reply": "Toggling mute ..." },
+    "vu": { "label": "🔈+", "action": press_key(Key.up), "reply": "Increasing volume ..." },
+    "np": { "label": "🖱 Now playing", "action": mouse_twitch, "reply": "🖱" },
+    "s": { "label": "⏭ Skip intro", "action": press_key('s'), "reply": "Skipping intro ..." }
+}
+
+def get_label(action_key):
+    return REMOTE_ACTIONS[action_key]["label"]
+
+def get_action_from_label(label):
+    for action in REMOTE_ACTIONS:
+        if REMOTE_ACTIONS[action]["label"] == label:
+            return REMOTE_ACTIONS[action]
+    return None
+
+
+def send_remote(bot, update):
+    sender = update.effective_user.id
+    if sender in USERS.values():
+        keyboard = [
+            ["f", "f_off"],
+            ["rw", "p", "ff"],
+            ["vd", "m", "vu"],
+            ["np", "s"]
+        ]
+        keyboard = [[get_label(button) for button in row] for row in keyboard]
+        update.message.reply_text(
+            text = "Sent remote.",
+            reply_markup = ReplyKeyboardMarkup(keyboard),
+            quote = False
+        )
+
+
+def answer_remote(bot, update):
+    sender = update.effective_user.id
+    if sender in USERS.values():
+        input_text = update.message.text
+        input_action = get_action_from_label(input_text)
+        if (input_action):
+            # Perform action by calling the function
+            input_action["action"]()
+            update.message.reply_text(
+                text = input_action["reply"],
+                quote = False
+            )
