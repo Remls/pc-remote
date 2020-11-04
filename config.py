@@ -1,2 +1,2 @@
 BOT_VERSION = "1.1.0"
-SILENT_MODE = False
+SILENT_MODE = True
